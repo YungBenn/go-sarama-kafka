@@ -4,7 +4,6 @@ import (
 	"go-sarama-kafka/config"
 	"go-sarama-kafka/consumer/kafka"
 	ws "go-sarama-kafka/consumer/websocket"
-	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,20 +30,6 @@ func main() {
 	go r.Run(":" + env.Port)
 
 	// Kafka consumer
-	config := kafka.CreateKafkaConfig()
-	consumer, err := kafka.CreateKafkaConsumer(env.KafkaAddress, env.KafkaPort, config)
-	if err != nil {
-		log.Fatalf("Error creating Kafka consumer: %v", err)
-	}
-	defer consumer.Close()
-
-	partitionConsumer, err := kafka.CreatePartitionConsumer(consumer, env.KafkaTopic, 0)
-	if err != nil {
-		log.Fatalf("Error consuming partition: %v", err)
-	}
-	defer partitionConsumer.Close()
-
-	kafka.ProcessMessages(partitionConsumer)
-
+	kafka.StartKafka(env)
 }
 
