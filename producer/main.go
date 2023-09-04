@@ -1,12 +1,18 @@
 package main
 
 import (
+	"go-sarama-kafka/config"
 	"go-sarama-kafka/producer/kafka"
 	"go-sarama-kafka/producer/model"
 )
 
 func main() {
-	producer := kafka.KafkaBootstrap()
+	env, err := config.LoadConfig()
+	if err != nil {
+		panic(err)
+	}
+
+	producer := kafka.KafkaBootstrap(env.KafkaAddress, env.KafkaPort)
 	defer producer.Close()
 
 	message := model.User{
@@ -15,5 +21,5 @@ func main() {
 		Hobby: "Coding",
 	}	
 	
-	kafka.SendMessage(producer, message)
+	kafka.SendMessage(env.KafkaTopic, producer, message)
 }

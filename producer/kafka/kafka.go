@@ -2,19 +2,20 @@ package kafka
 
 import (
 	"encoding/json"
+	"fmt"
 	"go-sarama-kafka/producer/model"
 	"log"
 
 	"github.com/IBM/sarama"
 )
 
-func KafkaBootstrap() sarama.SyncProducer {
+func KafkaBootstrap(address string, port string) sarama.SyncProducer {
 	config := sarama.NewConfig()
 	config.Producer.Return.Successes = true
 	config.Producer.Return.Errors = true
 	config.Producer.RequiredAcks = sarama.WaitForLocal
 
-	producer, err := sarama.NewSyncProducer([]string{"localhost:9092"}, config)
+	producer, err := sarama.NewSyncProducer([]string{fmt.Sprintf("%s:%s", address, port)}, config)
 	if err != nil {
 		log.Fatalf("Error creating Kafka producer: %v", err)
 	}
@@ -22,7 +23,7 @@ func KafkaBootstrap() sarama.SyncProducer {
 	return producer
 }
 
-func SendMessage(producer sarama.SyncProducer, message model.User)  {
+func SendMessage(topic string, producer sarama.SyncProducer, message model.User)  {
 	jsonData, err := json.Marshal(message)
 	if err != nil {
 		log.Fatalf("Error encoding JSON: %v", err)

@@ -2,7 +2,9 @@ package kafka
 
 import (
 	"encoding/json"
+	"fmt"
 	"go-sarama-kafka/consumer/model"
+	ws "go-sarama-kafka/consumer/websocket"
 	"log"
 
 	"github.com/IBM/sarama"
@@ -14,8 +16,8 @@ func CreateKafkaConfig() *sarama.Config {
 	return config
 }
 
-func CreateKafkaConsumer(config *sarama.Config) (sarama.Consumer, error) {
-	consumer, err := sarama.NewConsumer([]string{"localhost:9092"}, config)
+func CreateKafkaConsumer(address string, port string, config *sarama.Config) (sarama.Consumer, error) {
+	consumer, err := sarama.NewConsumer([]string{fmt.Sprintf("%s:%s", address, port)}, config)
 	return consumer, err
 }
 
@@ -44,5 +46,6 @@ func HandleMessage(message *sarama.ConsumerMessage) {
 	}
 	log.Print(user)
 
-	// Lakukan pemrosesan pesan di sini sesuai kebutuhan Anda
+	// received message from kafka, send to websocket
+	ws.SendWebSocketUpdate(user.Name)
 }
