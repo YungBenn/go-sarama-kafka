@@ -65,5 +65,6 @@ func HandleMessage(message *sarama.ConsumerMessage) {
 	log.Print(user)
 
 	// received message from kafka, send to websocket
-	ws.SendWebSocketUpdate(user.Name)
+	ws.SendWebSocketUpdate(fmt.Sprintf("Sending message to websocket: %v", user))
+	// ws.SendWebSocketUpdate(user.Name)
 }
