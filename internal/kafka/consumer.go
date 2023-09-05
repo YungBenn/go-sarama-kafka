@@ -66,7 +66,10 @@ func HandleMessage(db *gorm.DB, message *sarama.ConsumerMessage) {
 	}
 	log.Print(user)
 
-	repository.InsertUser(db, &user)
+	err = repository.InsertUser(db, &user)
+	if err != nil {
+		log.Fatalf("Error inserting user into database: %v", err)
+	}
 
 	// received message from kafka, send to websocket
 	ws.SendWebSocketUpdate(fmt.Sprintf("Sending message to websocket: %v", user))
