@@ -31,7 +31,7 @@ func SendMessage(topic string, producer sarama.SyncProducer, message model.User)
 
 	// Create a Kafka message
 	kafkaMessage := &sarama.ProducerMessage{
-		Topic: "purchases",
+		Topic: topic,
 		Value: sarama.StringEncoder(jsonData),
 	}
 

@@ -3,3 +3,6 @@ run-producer:
 
 run-consumer:
 	go run ./consumer/main.go
+
+docker:
+	docker-compose up -d

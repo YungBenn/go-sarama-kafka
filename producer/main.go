@@ -16,9 +16,9 @@ func main() {
 	defer producer.Close()
 
 	message := model.User{
-		Name:  "Ahmad",
-		Age:   12,
-		Hobby: "Coding",
+		Name:  "Ruben",
+		Age:   22,
+		Hobby: "Watch movie",
 	}	
 	
 	kafka.SendMessage(env.KafkaTopic, producer, message)

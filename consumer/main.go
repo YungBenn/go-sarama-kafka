@@ -2,7 +2,7 @@ package main
 
 import (
 	"go-sarama-kafka/config"
-	"go-sarama-kafka/consumer/kafka"
+	broker "go-sarama-kafka/consumer/kafka"
 	ws "go-sarama-kafka/consumer/websocket"
 
 	"github.com/gin-gonic/gin"
@@ -27,9 +27,8 @@ func main() {
 	// Websocket endpoint
 	r.GET("/ws", ws.HandleWebSocket)
 
-	go r.Run(":" + env.Port)
-
 	// Kafka consumer
-	kafka.StartKafka(env)
-}
+	go broker.StartKafka(env)
 
+	r.Run(":" + env.Port)
+}
