@@ -24,16 +24,12 @@ func main() {
 		SSLMode:  env.DBSSLmode,
 	}
 
-	go func() {
-		db := db.ConnectDB(config)
+	db := db.ConnectDB(config)
 
-		// Start Kafka consumer
-		broker.StartKafka(env, db)
-	}()
+	go broker.StartKafka(env, db)
+	go ws.StartWebSocketServer(env.WsPort)
 
 	r := gin.Default()
-
-	go ws.StartWebSocketServer(env.WsPort)
 
 	r.GET("/hello", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{
