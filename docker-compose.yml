@@ -19,3 +19,18 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_CREATE_TOPICS:             "${KAFKA_TOPIC}:1:1"
       KAFKA_ZOOKEEPER_CONNECT:         "zookeeper:2181"
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - ${DB_PORT}:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8082:8080

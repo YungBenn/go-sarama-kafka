@@ -1,8 +1,8 @@
 run-producer:
-	go run ./producer/main.go
+	go run ./cmd/producer/main.go
 
 run-consumer:
-	go run ./consumer/main.go
+	go run ./cmd/consumer/main.go
 
 docker:
 	docker-compose up -d

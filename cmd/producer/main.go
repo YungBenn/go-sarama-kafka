@@ -2,8 +2,8 @@ package main
 
 import (
 	"go-sarama-kafka/config"
-	"go-sarama-kafka/producer/kafka"
-	"go-sarama-kafka/producer/model"
+	"go-sarama-kafka/internal/kafka"
+	"go-sarama-kafka/internal/model"
 )
 
 func main() {

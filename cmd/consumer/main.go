@@ -2,8 +2,9 @@ package main
 
 import (
 	"go-sarama-kafka/config"
-	broker "go-sarama-kafka/consumer/kafka"
-	ws "go-sarama-kafka/consumer/websocket"
+	"go-sarama-kafka/internal/db"
+	broker "go-sarama-kafka/internal/kafka"
+	ws "go-sarama-kafka/internal/websocket"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,6 +14,22 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	config := &db.ConfigDB{
+		Host:     env.DBHost,
+		User:     env.DBUser,
+		Password: env.DBPass,
+		DBName:   env.DBName,
+		Port:     env.DBPort,
+		SSLMode:  env.DBSSLmode,
+	}
+
+	go func() {
+		db := db.ConnectDB(config)
+
+		// Start Kafka consumer
+		broker.StartKafka(env, db)
+	}()
 
 	r := gin.Default()
 
@@ -26,9 +43,6 @@ func main() {
 
 	// Websocket endpoint
 	r.GET("/ws", ws.HandleWebSocket)
-
-	// Kafka consumer
-	go broker.StartKafka(env)
 
 	r.Run(":" + env.Port)
 }

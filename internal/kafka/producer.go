@@ -3,7 +3,7 @@ package kafka
 import (
 	"encoding/json"
 	"fmt"
-	"go-sarama-kafka/producer/model"
+	"go-sarama-kafka/internal/model"
 	"log"
 
 	"github.com/IBM/sarama"

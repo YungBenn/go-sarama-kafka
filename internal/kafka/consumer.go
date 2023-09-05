@@ -4,14 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"go-sarama-kafka/config"
-	"go-sarama-kafka/consumer/model"
-	ws "go-sarama-kafka/consumer/websocket"
+	"go-sarama-kafka/internal/model"
+	"go-sarama-kafka/internal/repository"
+	ws "go-sarama-kafka/internal/websocket"
 	"log"
 
 	"github.com/IBM/sarama"
+	"gorm.io/gorm"
 )
 
-func StartKafka(env config.EnvVars)  {
+func StartKafka(env config.EnvVars, db *gorm.DB)  {
 	config := CreateKafkaConfig()
 	consumer, err := CreateKafkaConsumer(env.KafkaAddress, env.KafkaPort, config)
 	if err != nil {
@@ -25,7 +27,7 @@ func StartKafka(env config.EnvVars)  {
 	}
 	defer partitionConsumer.Close()
 
-	ProcessMessages(partitionConsumer)
+	ProcessMessages(db, partitionConsumer)
 }
 
 func CreateKafkaConfig() *sarama.Config {
@@ -44,18 +46,18 @@ func CreatePartitionConsumer(consumer sarama.Consumer, topic string, partition i
 	return partitionConsumer, err
 }
 
-func ProcessMessages(partitionConsumer sarama.PartitionConsumer) {
+func ProcessMessages(db *gorm.DB, partitionConsumer sarama.PartitionConsumer) {
 	for {
 		select {
 		case message := <-partitionConsumer.Messages():
-			HandleMessage(message)
+			HandleMessage(db, message)
 		case err := <-partitionConsumer.Errors():
 			log.Printf("Error: %v\n", err.Err)
 		}
 	}
 }
 
-func HandleMessage(message *sarama.ConsumerMessage) {
+func HandleMessage(db *gorm.DB, message *sarama.ConsumerMessage) {
 	var user model.User
 	err := json.Unmarshal(message.Value, &user)
 	if err != nil {
@@ -63,6 +65,8 @@ func HandleMessage(message *sarama.ConsumerMessage) {
 		return
 	}
 	log.Print(user)
+
+	repository.InsertUser(db, &user)
 
 	// received message from kafka, send to websocket
 	ws.SendWebSocketUpdate(fmt.Sprintf("Sending message to websocket: %v", user))
